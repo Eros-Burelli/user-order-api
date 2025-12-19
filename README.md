@@ -58,16 +58,20 @@ How to run the application:
 ```text
 src
  ├─ main
- │   ├─ java
- │   │   └─ com
- │   │       └─ eros
- │   │           └─ userorderapi
- │   │               ├─ controller
- │   │               ├─ service
- │   │               ├─ repository
- │   │               ├─ model
- │   │               ├─ dto
- │   │               └─ security
+ │   └─ java
+ │       └─ com
+ │           └─ eros
+ │               └─ userorderapi
+ │                   ├─ controller
+ │                   ├─ dto
+ │                   │   ├─ request
+ │                   │   └─ response
+ │                   ├─ enums
+ │                   ├─ exception
+ │                   ├─ model
+ │                   ├─ repository
+ │                   ├─ security
+ │                   └─ service
  └─ test
      └─ java
          └─ com
