@@ -53,20 +53,29 @@ How to run the application:
 3. Run the application:
    mvn spring-boot:run
 
-Project structure:
+## Project Structure
+
+```text
 src
  ├─ main
- │   ├─ java/com/eros/userorderapi
- │   │   ├─ controller
- │   │   ├─ service
- │   │   ├─ repository
- │   │   ├─ model
- │   │   ├─ dto
- │   │   └─ security
+ │   ├─ java
+ │   │   └─ com
+ │   │       └─ eros
+ │   │           └─ userorderapi
+ │   │               ├─ controller
+ │   │               ├─ service
+ │   │               ├─ repository
+ │   │               ├─ model
+ │   │               ├─ dto
+ │   │               └─ security
  └─ test
-     └─ java/com/eros/userorderapi
-         ├─ controller
-         └─ service
+     └─ java
+         └─ com
+             └─ eros
+                 └─ userorderapi
+                     ├─ controller
+                     └─ service
+```
 
 Design notes:
 - DTOs are used to decouple API contracts from persistence entities
