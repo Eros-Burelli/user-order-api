@@ -1,0 +1,35 @@
+# Build
+target/
+build/
+
+# Eclipse / STS
+.project
+.classpath
+.settings/
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+bin/
+
+# IDE generici
+*.iml
+*.iws
+.idea
+*.ipr
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local application properties (password/chiavi)
+application-local.properties
+
+# Maven wrapper (opzionale)
+.mvn/wrapper/maven-wrapper.jar
+
+# VS Code
+.vscode/
