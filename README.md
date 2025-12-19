@@ -12,7 +12,7 @@ Tech stack:
 - Spring Data JPA
 - Hibernate
 - Maven
-- H2 / PostgreSQL (configurable)
+- MySQL
 - JUnit 5
 - Mockito
 - MockMvc
