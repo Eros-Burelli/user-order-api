@@ -3,7 +3,7 @@ package com.eros.userorderapi.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.eros.userorderapi.dto.request.UserCreateRequestDTO;
@@ -13,16 +13,15 @@ import com.eros.userorderapi.exception.ResourceNotFoundException;
 import com.eros.userorderapi.model.User;
 import com.eros.userorderapi.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-	public UserService(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+	private final PasswordEncoder passwordEncoder;
 
 	public User createUser(UserCreateRequestDTO dto) {
 		User user = new User();
