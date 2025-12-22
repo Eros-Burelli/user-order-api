@@ -9,17 +9,18 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.eros.userorderapi.config.OrderControllerTestConfig;
 import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderItemRequestDTO;
 import com.eros.userorderapi.model.Order;
@@ -27,19 +28,24 @@ import com.eros.userorderapi.security.JwtAuthenticationFilter;
 import com.eros.userorderapi.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(OrderController.class)
+@WebMvcTest(
+	    controllers = OrderController.class,
+	    excludeFilters = {
+	        @ComponentScan.Filter(
+	            type = FilterType.ASSIGNABLE_TYPE,
+	            classes = JwtAuthenticationFilter.class
+	        )
+	    }
+	)
 @AutoConfigureMockMvc(addFilters = false)
-@ExtendWith(MockitoExtension.class)
+@Import(OrderControllerTestConfig.class)
 class OrderControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 
-	@Mock
+	@Autowired
 	private OrderService orderService;
-
-    @Mock
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Autowired
 	private ObjectMapper objectMapper;

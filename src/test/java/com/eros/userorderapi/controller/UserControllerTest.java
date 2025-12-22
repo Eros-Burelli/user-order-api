@@ -7,38 +7,40 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.eros.userorderapi.config.UserControllerTestConfig;
 import com.eros.userorderapi.dto.request.UserCreateRequestDTO;
 import com.eros.userorderapi.model.User;
 import com.eros.userorderapi.security.JwtAuthenticationFilter;
-import com.eros.userorderapi.security.JwtTokenProvider;
 import com.eros.userorderapi.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(UserController.class)
+@WebMvcTest(
+	    controllers = UserController.class,
+	    excludeFilters = {
+	        @ComponentScan.Filter(
+	            type = FilterType.ASSIGNABLE_TYPE,
+	            classes = JwtAuthenticationFilter.class
+	        )
+	    }
+	)
 @AutoConfigureMockMvc(addFilters = false)
-@ExtendWith(MockitoExtension.class)
+@Import(UserControllerTestConfig.class)
 class UserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 
-	@Mock
+	@Autowired
 	private UserService userService;
-
-	@Mock
-    private JwtTokenProvider jwtTokenProvider;
-
-	@Mock
-	private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Autowired
 	private ObjectMapper objectMapper;
