@@ -40,7 +40,7 @@ class UserServiceTest {
 	    savedUser.setId(1L);
 	    savedUser.setName("Mario");
 	    savedUser.setEmail("mario@test.com");
-	    savedUser.setPassword("encoded"); // serve solo internamente
+	    savedUser.setPassword("encoded");
 	    savedUser.setRole(UserRole.USER);
 
 	    when(passwordEncoder.encode("plain")).thenReturn("encoded");
@@ -48,10 +48,11 @@ class UserServiceTest {
 
 	    UserResponseDTO result = userService.createUser(dto);
 
-	    assertEquals(1L, result.getId());
-	    assertEquals("Mario", result.getName());
-	    assertEquals("mario@test.com", result.getEmail());
+	    assertEquals(1L, result.id());
+	    assertEquals("Mario", result.name());
+	    assertEquals("mario@test.com", result.email());
 	}
+
 
 
 }

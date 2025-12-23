@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderStatusUpdateRequestDTO;
+import com.eros.userorderapi.dto.response.OrderResponseDTO;
 import com.eros.userorderapi.model.Order;
 import com.eros.userorderapi.service.OrderService;
 
@@ -27,20 +28,20 @@ public class OrderController {
 
 	@PostMapping("/user/{userId}")
 	@PreAuthorize("hasRole('USER')")
-	public Order createOrder(@PathVariable Long userId, @RequestBody OrderCreateRequestDTO dto) {
+	public OrderResponseDTO createOrder(@PathVariable Long userId, @RequestBody OrderCreateRequestDTO dto) {
 		return orderService.createOrder(userId, dto);
 	}
 
 	@GetMapping("/user/{userId}")
 	@PreAuthorize("hasRole('USER')")
-	public List<Order> getOrdersByUser(@PathVariable Long userId) {
+	public List<OrderResponseDTO> getOrdersByUser(@PathVariable Long userId) {
 		return orderService.getOrdersByUser(userId);
 	}
 
 
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")
-	public List<Order> getAllOrders() {
+	public List<OrderResponseDTO> getAllOrders() {
 		return orderService.getAllOrders();
 	}
 

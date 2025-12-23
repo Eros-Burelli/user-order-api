@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.eros.userorderapi.config.OrderControllerTestConfig;
 import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderItemRequestDTO;
-import com.eros.userorderapi.model.Order;
+import com.eros.userorderapi.dto.response.OrderItemResponseDTO;
+import com.eros.userorderapi.dto.response.OrderResponseDTO;
 import com.eros.userorderapi.security.JwtAuthenticationFilter;
 import com.eros.userorderapi.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,13 +59,19 @@ class OrderControllerTest {
 		OrderCreateRequestDTO dto = new OrderCreateRequestDTO(List.of(itemDTO));
 
 		Mockito.when(orderService.createOrder(Mockito.eq(1L), Mockito.any(OrderCreateRequestDTO.class)))
-			.thenAnswer(i -> {
-				var order = new Order();
-				order.setId(1L);
-				order.setUser(null);
-				order.setTotalAmount(new BigDecimal("20.00"));
-				return order;
-			});
+	    .thenAnswer(i -> {
+	        List<OrderItemResponseDTO> items = List.of(
+	            new OrderItemResponseDTO(1L, "Product A", 2, new BigDecimal("10.00"))
+	        );
+	        return new OrderResponseDTO(
+	            1L,
+	            LocalDateTime.now(),
+	            new BigDecimal("20.00"),
+	            "PENDING",
+	            items
+	        );
+	    });
+
 
 		mockMvc.perform(post("/orders/user/1")
                 .contentType(MediaType.APPLICATION_JSON)

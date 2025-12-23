@@ -18,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderItemRequestDTO;
+import com.eros.userorderapi.dto.response.OrderItemResponseDTO;
+import com.eros.userorderapi.dto.response.OrderResponseDTO;
 import com.eros.userorderapi.exception.ResourceNotFoundException;
 import com.eros.userorderapi.model.Order;
 import com.eros.userorderapi.model.Product;
@@ -43,28 +45,35 @@ class OrderServiceTest {
 
 	@Test
 	void testCreateOrder_success() {
-		User user = new User("Mario Rossi", "mario@example.com", "password");
-		user.setId(1L);
+	    User user = new User("Mario Rossi", "mario@example.com", "password");
+	    user.setId(1L);
 
-		Product product = new Product();
-		product.setId(1L);
-		product.setPrice(new BigDecimal("10.00"));
+	    Product product = new Product();
+	    product.setId(1L);
+	    product.setName("Product A");
+	    product.setPrice(new BigDecimal("10.00"));
 
-		OrderItemRequestDTO itemDTO = new OrderItemRequestDTO(1L, 2);
-		OrderCreateRequestDTO dto = new OrderCreateRequestDTO(List.of(itemDTO));
+	    OrderItemRequestDTO itemDTO = new OrderItemRequestDTO(1L, 2);
+	    OrderCreateRequestDTO dto = new OrderCreateRequestDTO(List.of(itemDTO));
 
-		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-		when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArguments()[0]);
+	    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+	    when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+	    when(orderRepository.save(any(Order.class)))
+	        .thenAnswer(invocation -> invocation.getArgument(0));
 
-		Order order = orderService.createOrder(1L, dto);
+	    OrderResponseDTO response = orderService.createOrder(1L, dto);
 
-		assertNotNull(order);
-		assertEquals(user, order.getUser());
-		assertEquals(1, order.getItems().size());
-		assertEquals(new BigDecimal("20.00"), order.getTotalAmount());
+	    assertNotNull(response);
+	    assertEquals(new BigDecimal("20.00"), response.totalAmount());
+	    assertEquals(1, response.items().size());
 
+	    OrderItemResponseDTO item = response.items().get(0);
+	    assertEquals(1L, item.productId());
+	    assertEquals("Product A", item.productName());
+	    assertEquals(2, item.quantity());
+	    assertEquals(new BigDecimal("10.00"), item.unitPrice());
 	}
+
 
 	@Test
 	void testCreateOrder_userNotFound() {

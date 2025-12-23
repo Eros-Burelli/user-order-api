@@ -46,13 +46,17 @@ public class UserService {
 		return toResponseDTO(user);
 	}
 
-	public User updateUser(Long id, UserCreateRequestDTO dto) {
-		return userRepository.findById(id).map(user -> {
-			user.setName(dto.getName());
-			user.setEmail(dto.getEmail());
-			user.setPassword(passwordEncoder.encode(dto.getPassword()));
-			return userRepository.save(user);
-		}).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+	public UserResponseDTO updateUser(Long id, UserCreateRequestDTO dto) {
+		User user = userRepository.findById(id)
+						.orElseThrow(() -> new ResourceNotFoundException("User not found iwth id " + id ));
+
+		user.setName(dto.getName());
+		user.setEmail(dto.getEmail());
+		user.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+		User updated = userRepository.save(user);
+
+		return toResponseDTO(updated);
 	}
 
 	public void deleteUser(Long id) {

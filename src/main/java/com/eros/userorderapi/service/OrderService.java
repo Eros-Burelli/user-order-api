@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
+import com.eros.userorderapi.dto.response.OrderItemResponseDTO;
+import com.eros.userorderapi.dto.response.OrderResponseDTO;
 import com.eros.userorderapi.enums.OrderStatus;
 import com.eros.userorderapi.exception.ResourceNotFoundException;
 import com.eros.userorderapi.model.Order;
@@ -32,13 +34,14 @@ public class OrderService {
 	private ProductRepository productRepository;
 
 	@Transactional
-	public Order createOrder(Long userId, OrderCreateRequestDTO dto) {
+	public OrderResponseDTO createOrder(Long userId, OrderCreateRequestDTO dto) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
 
 		Order order = new Order();
 		order.setUser(user);
 		order.setCreatedAt(LocalDateTime.now());
+		order.setStatus(OrderStatus.PENDING);
 
 		List<OrderItem> items = dto.getItems().stream()
 				.map(i -> {
@@ -60,18 +63,24 @@ public class OrderService {
 
 		order.setTotalAmount(total);
 
-		return orderRepository.save(order);
+		Order saved = orderRepository.save(order);
+
+		return toResponseDTO(saved);
 	}
 
-	public List<Order> getOrdersByUser(Long userId) {
+	public List<OrderResponseDTO> getOrdersByUser(Long userId) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+						.orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
 
-		return orderRepository.findByUser(user);
+		return orderRepository.findByUser(user).stream()
+				.map(this::toResponseDTO)
+				.toList();
 	}
 
-	public List<Order> getAllOrders(){
-		return orderRepository.findAll();
+	public List<OrderResponseDTO> getAllOrders(){
+		return orderRepository.findAll().stream()
+				.map(this::toResponseDTO)
+				.toList();
 	}
 
 	public Order updateOrder(Long id, OrderStatus orderStatus) {
@@ -80,5 +89,27 @@ public class OrderService {
 			return orderRepository.save(order);
 		}).orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + id));
 	}
+
+
+	private OrderResponseDTO toResponseDTO(Order order) {
+
+	    List<OrderItemResponseDTO> itemDTOs = order.getItems().stream()
+	        .map(item -> new OrderItemResponseDTO(
+	            item.getProduct().getId(),
+	            item.getProduct().getName(),
+	            item.getQuantity(),
+	            item.getUnitPrice()
+	        ))
+	        .toList();
+
+	    return new OrderResponseDTO(
+	        order.getId(),
+	        order.getCreatedAt(),
+	        order.getTotalAmount(),
+	        order.getStatus().name(),
+	        itemDTOs
+	    );
+	}
+
 
 }

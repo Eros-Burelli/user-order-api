@@ -2,20 +2,14 @@ package com.eros.userorderapi.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public record OrderResponseDTO(
+		Long id,
+	    LocalDateTime createdAt,
+	    BigDecimal totalAmount,
+	    String status,
+	    List<OrderItemResponseDTO> items
+	    ) {
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class OrderResponseDTO {
-	private Long id;
-	private String product;
-	private String quantity;
-	private BigDecimal price;
-	private LocalDateTime orderDate;
 }
