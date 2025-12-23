@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.eros.userorderapi.dto.request.UserCreateRequestDTO;
+import com.eros.userorderapi.dto.response.UserResponseDTO;
 import com.eros.userorderapi.enums.UserRole;
 import com.eros.userorderapi.model.User;
 import com.eros.userorderapi.repository.UserRepository;
@@ -29,19 +30,28 @@ class UserServiceTest {
 	private UserService userService;
 
 	@Test
-	void createUser_shouldAssignDefaultRoleAndEncodePassword() {
-		UserCreateRequestDTO dto = new UserCreateRequestDTO();
-		dto.setName("Mario");
-		dto.setEmail("mario@test.com");
-		dto.setPassword("plain");
+	void createUser_shouldReturnUserResponseDTO() {
+	    UserCreateRequestDTO dto = new UserCreateRequestDTO();
+	    dto.setName("Mario");
+	    dto.setEmail("mario@test.com");
+	    dto.setPassword("plain");
 
-		when(passwordEncoder.encode("plain")).thenReturn("encoded");
-		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+	    User savedUser = new User();
+	    savedUser.setId(1L);
+	    savedUser.setName("Mario");
+	    savedUser.setEmail("mario@test.com");
+	    savedUser.setPassword("encoded"); // serve solo internamente
+	    savedUser.setRole(UserRole.USER);
 
-		User user = userService.createUser(dto);
+	    when(passwordEncoder.encode("plain")).thenReturn("encoded");
+	    when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-		assertEquals(UserRole.USER, user.getRole());
-		assertEquals("encoded", user.getPassword());
+	    UserResponseDTO result = userService.createUser(dto);
+
+	    assertEquals(1L, result.getId());
+	    assertEquals("Mario", result.getName());
+	    assertEquals("mario@test.com", result.getEmail());
 	}
+
 
 }

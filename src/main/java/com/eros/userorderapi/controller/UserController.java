@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eros.userorderapi.dto.request.LoginRequestDTO;
 import com.eros.userorderapi.dto.request.UserCreateRequestDTO;
-import com.eros.userorderapi.dto.response.LoginRequestDTO;
+import com.eros.userorderapi.dto.response.TokenResponseDTO;
+import com.eros.userorderapi.dto.response.UserResponseDTO;
 import com.eros.userorderapi.model.User;
 import com.eros.userorderapi.security.JwtTokenProvider;
 import com.eros.userorderapi.service.UserService;
@@ -29,15 +31,13 @@ public class UserController {
 	private  UserService userService;
 
 	@PostMapping
-	public User createUser(@RequestBody UserCreateRequestDTO dto) {
+	public UserResponseDTO createUser(@RequestBody UserCreateRequestDTO dto) {
 		return userService.createUser(dto);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<User> getUserById(@PathVariable Long id) {
-		return userService.getUserById(id)
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
+	public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+		return ResponseEntity.ok(userService.getUserById(id));
 	}
 
 	@PutMapping("/{id}")
@@ -52,9 +52,10 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public String login(@RequestBody LoginRequestDTO loginRequest) {
+	public TokenResponseDTO login(@RequestBody LoginRequestDTO loginRequest) {
 	    User user = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
-	    return jwtTokenProvider.generateToken(user.getId(), user.getRole());
+	    String token = jwtTokenProvider.generateToken(user.getId(), user.getRole());
+	    return new TokenResponseDTO(token);
 	}
 
 }

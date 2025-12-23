@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.eros.userorderapi.config.UserControllerTestConfig;
 import com.eros.userorderapi.dto.request.UserCreateRequestDTO;
-import com.eros.userorderapi.model.User;
+import com.eros.userorderapi.dto.response.UserResponseDTO;
 import com.eros.userorderapi.security.JwtAuthenticationFilter;
 import com.eros.userorderapi.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,11 +52,11 @@ class UserControllerTest {
 		dto.setEmail("mario@test.com");
 		dto.setPassword("password");
 
-		User user = new User("Mario", "mario@test.com", "econdedPassword");
-		user.setId(1L);
+		UserResponseDTO userResponseDTO = new UserResponseDTO(1L, "Mario", "mario@test.com");
 
 		when(userService.createUser(any(UserCreateRequestDTO.class)))
-			.thenReturn(user);
+		    .thenReturn(userResponseDTO);
+
 
 		mockMvc.perform(post("/users")
 					.contentType(MediaType.APPLICATION_JSON)

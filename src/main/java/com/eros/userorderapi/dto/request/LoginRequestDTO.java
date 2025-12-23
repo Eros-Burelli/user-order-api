@@ -1,4 +1,4 @@
-package com.eros.userorderapi.dto.response;
+package com.eros.userorderapi.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

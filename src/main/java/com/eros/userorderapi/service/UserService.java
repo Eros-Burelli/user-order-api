@@ -1,12 +1,12 @@
 package com.eros.userorderapi.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.eros.userorderapi.dto.request.UserCreateRequestDTO;
+import com.eros.userorderapi.dto.response.UserResponseDTO;
 import com.eros.userorderapi.enums.UserRole;
 import com.eros.userorderapi.exception.InvalidCredentialsException;
 import com.eros.userorderapi.exception.ResourceNotFoundException;
@@ -23,22 +23,27 @@ public class UserService {
 
 	private final PasswordEncoder passwordEncoder;
 
-	public User createUser(UserCreateRequestDTO dto) {
+	public UserResponseDTO createUser(UserCreateRequestDTO dto) {
 		User user = new User();
 		user.setName(dto.getName());
 		user.setEmail(dto.getEmail());
 		user.setPassword(passwordEncoder.encode(dto.getPassword()));
 		user.setRole(UserRole.USER);
 
-		return userRepository.save(user);
+		User saved = userRepository.save(user);
+
+		return toResponseDTO(saved);
 	}
 
 	public List<User> getAllUsers() {
 		return userRepository.findAll();
 	}
 
-	public Optional<User> getUserById(Long id) {
-		return userRepository.findById(id);
+	public UserResponseDTO getUserById(Long id) {
+		User user = userRepository.findById(id)
+						.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+		return toResponseDTO(user);
 	}
 
 	public User updateUser(Long id, UserCreateRequestDTO dto) {
@@ -63,6 +68,14 @@ public class UserService {
 		}
 
 		return user;
+	}
+
+	private UserResponseDTO toResponseDTO(User user) {
+		return new UserResponseDTO(
+				user.getId(),
+				user.getName(),
+				user.getEmail()
+				);
 	}
 
 
