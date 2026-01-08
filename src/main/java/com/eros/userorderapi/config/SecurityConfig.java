@@ -2,6 +2,7 @@ package com.eros.userorderapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,11 +12,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.eros.userorderapi.security.JwtAuthenticationFilter;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -27,8 +30,16 @@ public class SecurityConfig {
 	        .authorizeHttpRequests(auth -> auth
 	            .requestMatchers("/users/login", "/users").permitAll()
 	            .requestMatchers("/products/**").permitAll()
-	            .requestMatchers("/admin/**").hasRole("ADMIN")
-	            .anyRequest().authenticated())
+	            .requestMatchers("/orders/user/**").hasRole("USER")
+	            .requestMatchers("/orders/**").hasRole("ADMIN")
+	            .anyRequest().authenticated()
+	        )
+	        .exceptionHandling(ex -> ex
+	            .authenticationEntryPoint((request, response, authException) ->
+	                response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+	            .accessDeniedHandler((request, response, accessDeniedException) ->
+	                response.sendError(HttpServletResponse.SC_FORBIDDEN))
+	        )
 	        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 	    return http.build();
