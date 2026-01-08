@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderStatusUpdateRequestDTO;
 import com.eros.userorderapi.dto.response.OrderResponseDTO;
-import com.eros.userorderapi.model.Order;
 import com.eros.userorderapi.service.OrderService;
 
 import lombok.AllArgsConstructor;
@@ -48,7 +47,7 @@ public class OrderController {
 
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public Order updateOrder(@PathVariable Long id, @RequestBody OrderStatusUpdateRequestDTO dto) {
+	public OrderResponseDTO updateOrder(@PathVariable Long id, @RequestBody OrderStatusUpdateRequestDTO dto) {
 		return orderService.updateOrder(id, dto.getStatus());
 	}
 

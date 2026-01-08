@@ -83,11 +83,11 @@ public class OrderService {
 				.toList();
 	}
 
-	public Order updateOrder(Long id, OrderStatus orderStatus) {
-		return orderRepository.findById(id).map(order -> {
-			order.setStatus(orderStatus);
-			return orderRepository.save(order);
-		}).orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + id));
+	public OrderResponseDTO updateOrder(Long id, OrderStatus orderStatus) {
+		Order order = orderRepository.findById(id)
+						.orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + id));
+		order.setStatus(orderStatus);
+		return toResponseDTO(orderRepository.save(order));
 	}
 
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eros.userorderapi.dto.request.ProductCreateRequestDTO;
-import com.eros.userorderapi.model.Product;
+import com.eros.userorderapi.dto.response.ProductResponseDTO;
 import com.eros.userorderapi.service.ProductService;
 
 import lombok.AllArgsConstructor;
@@ -26,26 +26,26 @@ public class ProductController {
 	private ProductService productService;
 
 	@GetMapping("/{id}")
-	public Product getProductById(@PathVariable Long id) {
+	public ProductResponseDTO getProductById(@PathVariable Long id) {
 		return productService.getProductById(id);
 	}
 
 	@GetMapping
-	public List<Product> getAllProducts() {
+	public List<ProductResponseDTO> getAllProducts() {
 		return productService.getAllProducts();
 	}
 
 
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
-	public Product createProduct(@RequestBody ProductCreateRequestDTO dto) {
+	public ProductResponseDTO createProduct(@RequestBody ProductCreateRequestDTO dto) {
 		return productService.createProduct(dto);
 	}
 
 
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public Product updateProduct(@PathVariable Long id, @RequestBody ProductCreateRequestDTO dto) {
+	public ProductResponseDTO updateProduct(@PathVariable Long id, @RequestBody ProductCreateRequestDTO dto) {
 		return productService.updateProduct(id, dto);
 	}
 
