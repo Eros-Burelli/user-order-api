@@ -18,7 +18,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.eros.userorderapi.config.OrderControllerTestConfig;
-import com.eros.userorderapi.config.TestSecurityConfig;
+import com.eros.userorderapi.config.OrderSecurityTestConfig;
 import com.eros.userorderapi.controller.OrderController;
 import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderItemRequestDTO;
@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 		excludeFilters = @ComponentScan.Filter(
 				type = FilterType.ASSIGNABLE_TYPE,
 				classes = JwtAuthenticationFilter.class))
-@Import({OrderControllerTestConfig.class, TestSecurityConfig.class})
+@Import({OrderControllerTestConfig.class, OrderSecurityTestConfig.class})
 class OrderSecurityTest {
 
 	@Autowired

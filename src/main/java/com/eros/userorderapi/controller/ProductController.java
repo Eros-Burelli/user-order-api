@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/products")
 public class ProductController {
 
-	private ProductService productService;
+	private final ProductService productService;
 
 	@GetMapping("/{id}")
 	public ProductResponseDTO getProductById(@PathVariable Long id) {
@@ -35,13 +35,11 @@ public class ProductController {
 		return productService.getAllProducts();
 	}
 
-
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	public ProductResponseDTO createProduct(@RequestBody ProductCreateRequestDTO dto) {
 		return productService.createProduct(dto);
 	}
-
 
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
@@ -54,4 +52,5 @@ public class ProductController {
 	public void deleteProduct(@PathVariable Long id) {
 		productService.deleteProduct(id);
 	}
+
 }

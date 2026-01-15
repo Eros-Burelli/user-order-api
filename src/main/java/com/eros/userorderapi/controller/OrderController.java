@@ -16,6 +16,7 @@ import com.eros.userorderapi.dto.request.OrderStatusUpdateRequestDTO;
 import com.eros.userorderapi.dto.response.OrderResponseDTO;
 import com.eros.userorderapi.service.OrderService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -23,11 +24,11 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/orders")
 public class OrderController {
 
-	private OrderService orderService;
+	private final OrderService orderService;
 
 	@PostMapping("/user/{userId}")
 	@PreAuthorize("hasRole('USER')")
-	public OrderResponseDTO createOrder(@PathVariable Long userId, @RequestBody OrderCreateRequestDTO dto) {
+	public OrderResponseDTO createOrder(@PathVariable Long userId, @Valid @RequestBody OrderCreateRequestDTO dto) {
 		return orderService.createOrder(userId, dto);
 	}
 
@@ -37,20 +38,16 @@ public class OrderController {
 		return orderService.getOrdersByUser(userId);
 	}
 
-
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<OrderResponseDTO> getAllOrders() {
 		return orderService.getAllOrders();
 	}
 
-
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public OrderResponseDTO updateOrder(@PathVariable Long id, @RequestBody OrderStatusUpdateRequestDTO dto) {
+	public OrderResponseDTO updateOrder(@PathVariable Long id, @Valid @RequestBody OrderStatusUpdateRequestDTO dto) {
 		return orderService.updateOrder(id, dto.getStatus());
 	}
-
-
 
 }

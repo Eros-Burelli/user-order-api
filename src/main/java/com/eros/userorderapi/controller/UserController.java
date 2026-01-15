@@ -10,28 +10,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eros.userorderapi.dto.request.LoginRequestDTO;
 import com.eros.userorderapi.dto.request.UserCreateRequestDTO;
-import com.eros.userorderapi.dto.response.TokenResponseDTO;
+import com.eros.userorderapi.dto.request.UserUpdateRequestDTO;
 import com.eros.userorderapi.dto.response.UserResponseDTO;
-import com.eros.userorderapi.model.User;
-import com.eros.userorderapi.security.JwtTokenProvider;
 import com.eros.userorderapi.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-
 
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
 public class UserController {
 
-    private final JwtTokenProvider jwtTokenProvider;
-
-	private  UserService userService;
+	private final UserService userService;
 
 	@PostMapping
-	public UserResponseDTO createUser(@RequestBody UserCreateRequestDTO dto) {
+	public UserResponseDTO createUser(@Valid @RequestBody UserCreateRequestDTO dto) {
 		return userService.createUser(dto);
 	}
 
@@ -41,7 +36,7 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
-	public UserResponseDTO updateUser(@PathVariable Long id, @RequestBody UserCreateRequestDTO dto) {
+	public UserResponseDTO updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequestDTO dto) {
 		return userService.updateUser(id, dto);
 	}
 
@@ -49,13 +44,6 @@ public class UserController {
 	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 		userService.deleteUser(id);
 		return ResponseEntity.noContent().build();
-	}
-
-	@PostMapping("/login")
-	public TokenResponseDTO login(@RequestBody LoginRequestDTO loginRequest) {
-	    User user = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
-	    String token = jwtTokenProvider.generateToken(user.getId(), user.getRole());
-	    return new TokenResponseDTO(token);
 	}
 
 }
