@@ -14,15 +14,15 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserCreateRequestDTO {
 
-	@NotBlank
+	@NotBlank(message = "Name is required")
 	private String name;
 
-	@NotBlank
-	@Email
+	@NotBlank(message = "Email is required")
+	@Email(message = "Email should be valid")
 	private String email;
 
 	@NotBlank
-	@Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$", message = "Password must contain uppercase, number and special character")
+	@Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$", message = "Password must contain at least one uppercase letter, one number and one special character")
 	private String password;
 
 }

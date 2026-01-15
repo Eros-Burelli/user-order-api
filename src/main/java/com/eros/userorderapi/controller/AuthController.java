@@ -10,6 +10,7 @@ import com.eros.userorderapi.model.User;
 import com.eros.userorderapi.security.JwtTokenProvider;
 import com.eros.userorderapi.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,7 +21,7 @@ public class AuthController {
 	private final UserService userService;
 	private final JwtTokenProvider jwtTokenProvider;
 
-	public TokenResponseDTO login(@RequestBody LoginRequestDTO loginRequest) {
+	public TokenResponseDTO login(@Valid @RequestBody LoginRequestDTO loginRequest) {
 		User user = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
 		String token = jwtTokenProvider.generateToken(user.getId(), user.getRole());
 

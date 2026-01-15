@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserUpdateRequestDTO {
 
-	@NotBlank
+	@NotBlank(message="Name is required")
 	private String name;
 
 	@Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$", message = "Password must contain uppercase, number and special character")

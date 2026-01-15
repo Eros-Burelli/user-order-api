@@ -16,6 +16,7 @@ import com.eros.userorderapi.dto.request.ProductCreateRequestDTO;
 import com.eros.userorderapi.dto.response.ProductResponseDTO;
 import com.eros.userorderapi.service.ProductService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -37,13 +38,13 @@ public class ProductController {
 
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
-	public ProductResponseDTO createProduct(@RequestBody ProductCreateRequestDTO dto) {
+	public ProductResponseDTO createProduct(@Valid @RequestBody ProductCreateRequestDTO dto) {
 		return productService.createProduct(dto);
 	}
 
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ProductResponseDTO updateProduct(@PathVariable Long id, @RequestBody ProductCreateRequestDTO dto) {
+	public ProductResponseDTO updateProduct(@PathVariable Long id, @Valid @RequestBody ProductCreateRequestDTO dto) {
 		return productService.updateProduct(id, dto);
 	}
 
