@@ -2,13 +2,13 @@ package com.eros.userorderapi.exception;
 
 import java.time.LocalDateTime;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.eros.userorderapi.dto.response.ApiErrorResponse;
+import com.eros.userorderapi.enums.ApiErrorType;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -17,27 +17,12 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ApiErrorResponse> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
-		ApiErrorResponse response = new ApiErrorResponse(
-				LocalDateTime.now(),
-				HttpStatus.NOT_FOUND.value(),
-				"Resource not found",
-				ex.getMessage(),
-				request.getRequestURI());
-
-
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		return buildErrorResponse(ApiErrorType.NOT_FOUND, ex.getMessage(), request);
 	}
 
 	@ExceptionHandler({IllegalArgumentException.class, InvalidCredentialsException.class})
 	public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException ex, HttpServletRequest request) {
-		ApiErrorResponse response = new ApiErrorResponse(
-				LocalDateTime.now(),
-				HttpStatus.BAD_REQUEST.value(),
-				"Bad request",
-				ex.getMessage(),
-				request.getRequestURI());
-
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		return buildErrorResponse(ApiErrorType.BAD_REQUEST, ex.getMessage(), request);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -49,25 +34,23 @@ public class GlobalExceptionHandler {
 						   .findFirst()
 						   .orElse("Validation error");
 
-		ApiErrorResponse response = new ApiErrorResponse(
-				LocalDateTime.now(),
-				HttpStatus.BAD_REQUEST.value(),
-				"Validation error",
-				message,
-				request.getRequestURI());
-
-		return ResponseEntity.badRequest().body(response);
+		return buildErrorResponse(ApiErrorType.VALIDATION_ERROR, message, request);
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+		return buildErrorResponse(ApiErrorType.INTERNAL_ERROR, null, request);
+	}
+
+	private ResponseEntity<ApiErrorResponse> buildErrorResponse(ApiErrorType type, String details, HttpServletRequest request) {
 		ApiErrorResponse response = new ApiErrorResponse(
 				LocalDateTime.now(),
-				HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				"Internal server error",
-				"Unexpected error occured",
+				type.getStatus().value(),
+				type.getDefaultMessage(),
+				details != null ? details : type.getDefaultMessage(),
 				request.getRequestURI());
 
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		return ResponseEntity.status(type.getStatus()).body(response);
 	}
+
 }
