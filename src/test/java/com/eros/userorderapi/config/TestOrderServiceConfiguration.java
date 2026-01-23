@@ -15,7 +15,6 @@ public class TestOrderServiceConfiguration {
 	OrderService orderService() {
         return new OrderService(
             null,
-            null,
             null
         ) {
             @Override

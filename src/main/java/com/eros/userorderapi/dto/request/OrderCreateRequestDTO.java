@@ -14,7 +14,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderCreateRequestDTO {
-	@NotEmpty(message = "Ordere must contains at least one item")
+
+	@NotEmpty(message = "Order must contain at least one item")
 	@Valid
 	private List<OrderItemRequestDTO> items;
+
 }

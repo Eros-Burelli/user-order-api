@@ -19,7 +19,7 @@ public class ProductCreateRequestDTO {
 	@NotBlank(message = "Name is required")
 	private String name;
 
-	@NotNull
+	@NotNull(message = "Price is required")
 	@Positive(message = "Price must be greater than 0")
 	private BigDecimal price;
 

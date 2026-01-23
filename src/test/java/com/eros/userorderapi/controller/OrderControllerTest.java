@@ -26,6 +26,7 @@ import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderItemRequestDTO;
 import com.eros.userorderapi.dto.response.OrderItemResponseDTO;
 import com.eros.userorderapi.dto.response.OrderResponseDTO;
+import com.eros.userorderapi.model.User;
 import com.eros.userorderapi.security.JwtAuthenticationFilter;
 import com.eros.userorderapi.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,12 +54,14 @@ class OrderControllerTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	@WithMockUser(username = "user@example.com", roles = {"USER"})
+	@WithMockUser(username = "mario@example.com", roles = {"USER"})
 	void createOrder_asUser_shouldReturnOrder() throws Exception {
+	    User user = new User("Mario Rossi", "mario@example.com", "password");
+	    user.setId(1L);
 		OrderItemRequestDTO itemDTO = new OrderItemRequestDTO(1L, 2);
 		OrderCreateRequestDTO dto = new OrderCreateRequestDTO(List.of(itemDTO));
 
-		Mockito.when(orderService.createOrder(Mockito.eq(1L), Mockito.any(OrderCreateRequestDTO.class)))
+		Mockito.when(orderService.createOrder(user, Mockito.any(OrderCreateRequestDTO.class)))
 	    .thenAnswer(i -> {
 	        List<OrderItemResponseDTO> items = List.of(
 	            new OrderItemResponseDTO(1L, "Product A", 2, new BigDecimal("10.00"))

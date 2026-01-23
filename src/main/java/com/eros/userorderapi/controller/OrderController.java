@@ -3,9 +3,9 @@ package com.eros.userorderapi.controller;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderStatusUpdateRequestDTO;
 import com.eros.userorderapi.dto.response.OrderResponseDTO;
+import com.eros.userorderapi.security.CustomUserDetails;
 import com.eros.userorderapi.service.OrderService;
 
 import jakarta.validation.Valid;
@@ -26,16 +27,15 @@ public class OrderController {
 
 	private final OrderService orderService;
 
-	@PostMapping("/user/{userId}")
 	@PreAuthorize("hasRole('USER')")
-	public OrderResponseDTO createOrder(@PathVariable Long userId, @Valid @RequestBody OrderCreateRequestDTO dto) {
-		return orderService.createOrder(userId, dto);
+	public OrderResponseDTO createOrder(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody OrderCreateRequestDTO dto) {
+		return orderService.createOrder(userDetails.getUser(), dto);
 	}
 
-	@GetMapping("/user/{userId}")
+	@GetMapping("/me")
 	@PreAuthorize("hasRole('USER')")
-	public List<OrderResponseDTO> getOrdersByUser(@PathVariable Long userId) {
-		return orderService.getOrdersByUser(userId);
+	public List<OrderResponseDTO> getOrderByCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		return orderService.getOrdersByCurrentUser(userDetails.getUser());
 	}
 
 	@GetMapping

@@ -2,7 +2,6 @@ package com.eros.userorderapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +19,6 @@ import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderItemRequestDTO;
 import com.eros.userorderapi.dto.response.OrderItemResponseDTO;
 import com.eros.userorderapi.dto.response.OrderResponseDTO;
-import com.eros.userorderapi.exception.ResourceNotFoundException;
 import com.eros.userorderapi.model.Order;
 import com.eros.userorderapi.model.Product;
 import com.eros.userorderapi.model.User;
@@ -61,7 +59,7 @@ class OrderServiceTest {
 	    when(orderRepository.save(any(Order.class)))
 	        .thenAnswer(invocation -> invocation.getArgument(0));
 
-	    OrderResponseDTO response = orderService.createOrder(1L, dto);
+	    OrderResponseDTO response = orderService.createOrder(user, dto);
 
 	    assertNotNull(response);
 	    assertEquals(new BigDecimal("20.00"), response.totalAmount());
@@ -72,18 +70,6 @@ class OrderServiceTest {
 	    assertEquals("Product A", item.productName());
 	    assertEquals(2, item.quantity());
 	    assertEquals(new BigDecimal("10.00"), item.unitPrice());
-	}
-
-
-	@Test
-	void testCreateOrder_userNotFound() {
-		when(userRepository.findById(1L)).thenReturn(Optional.empty());
-
-		OrderCreateRequestDTO dto = new OrderCreateRequestDTO(List.of());
-
-		assertThrows(ResourceNotFoundException.class, () -> {
-			orderService.createOrder(1L, dto);
-		});
 	}
 
 }

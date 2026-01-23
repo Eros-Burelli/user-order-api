@@ -1,7 +1,6 @@
 package com.eros.userorderapi.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,29 +17,26 @@ import com.eros.userorderapi.model.Product;
 import com.eros.userorderapi.model.User;
 import com.eros.userorderapi.repository.OrderRepository;
 import com.eros.userorderapi.repository.ProductRepository;
-import com.eros.userorderapi.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class OrderService {
 
-	private OrderRepository orderRepository;
+	private final OrderRepository orderRepository;
+	private final ProductRepository productRepository;
 
-	private UserRepository userRepository;
 
-	private ProductRepository productRepository;
-
+	/**
+	 * Creates a new order for the given user and calculates the total amount.
+	 */
 	@Transactional
-	public OrderResponseDTO createOrder(Long userId, OrderCreateRequestDTO dto) {
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+	public OrderResponseDTO createOrder(User user, OrderCreateRequestDTO dto) {
 
 		Order order = new Order();
 		order.setUser(user);
-		order.setCreatedAt(LocalDateTime.now());
 		order.setStatus(OrderStatus.PENDING);
 
 		List<OrderItem> items = dto.getItems().stream()
@@ -55,7 +51,7 @@ public class OrderService {
 					return orderItem;
 				}).collect(Collectors.toList());
 
-		order.setItems(items);
+		items.forEach(order::addItem);
 
 		BigDecimal total = items.stream()
 				.map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
@@ -68,21 +64,30 @@ public class OrderService {
 		return toResponseDTO(saved);
 	}
 
-	public List<OrderResponseDTO> getOrdersByUser(Long userId) {
-		User user = userRepository.findById(userId)
-						.orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+
+	/**
+	 * Returns all orders belonging to a specific user.
+	 */
+	public List<OrderResponseDTO> getOrdersByCurrentUser(User user) {
 
 		return orderRepository.findByUser(user).stream()
 				.map(this::toResponseDTO)
 				.toList();
 	}
 
+	/*
+	 * Returns all orders
+	 */
 	public List<OrderResponseDTO> getAllOrders(){
 		return orderRepository.findAll().stream()
 				.map(this::toResponseDTO)
 				.toList();
 	}
 
+
+	/**
+	 * Updates the status of an existing order.
+	 */
 	public OrderResponseDTO updateOrder(Long id, OrderStatus orderStatus) {
 		Order order = orderRepository.findById(id)
 						.orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + id));
@@ -91,6 +96,9 @@ public class OrderService {
 	}
 
 
+	/**
+	 * Converts a Order entity to OrderResponseDTO.
+	 */
 	private OrderResponseDTO toResponseDTO(Order order) {
 
 	    List<OrderItemResponseDTO> itemDTOs = order.getItems().stream()
@@ -110,6 +118,5 @@ public class OrderService {
 	        itemDTOs
 	    );
 	}
-
 
 }

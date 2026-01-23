@@ -17,9 +17,9 @@ import com.eros.userorderapi.dto.response.ProductResponseDTO;
 import com.eros.userorderapi.service.ProductService;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/products")
 public class ProductController {
