@@ -68,7 +68,7 @@ public class OrderService {
 	/**
 	 * Returns all orders belonging to a specific user.
 	 */
-	public List<OrderResponseDTO> getOrdersByCurrentUser(User user) {
+	public List<OrderResponseDTO> getMyOrders(User user) {
 
 		return orderRepository.findByUser(user).stream()
 				.map(this::toResponseDTO)

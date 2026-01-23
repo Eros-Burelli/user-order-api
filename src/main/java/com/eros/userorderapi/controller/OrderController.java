@@ -35,7 +35,7 @@ public class OrderController {
 	@GetMapping("/me")
 	@PreAuthorize("hasRole('USER')")
 	public List<OrderResponseDTO> getOrderByCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
-		return orderService.getOrdersByCurrentUser(userDetails.getUser());
+		return orderService.getMyOrders(userDetails.getUser());
 	}
 
 	@GetMapping
