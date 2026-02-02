@@ -71,8 +71,8 @@ JWT_SECRET=your-secure-secret
 JWT_EXPIRATION=3600000
 ```
 
-```bash
 ### 3. Run the application
+```bash
 mvn spring-boot:run
 ```
 
@@ -107,20 +107,20 @@ src
 ```
 
 ### Design notes
-	- DTOs decouple API contracts from persistence entities
-	- Business logic centralized in the service layer
-	- Clean separation of concerns (Controller / Service / Repository)
-	- JWT authentication implemented via a custom security filter
-	- Centralized exception handling with custom error responses
-	- Validation annotations ensure request correctness before reaching the service layer
-	- All endpoints follow REST conventions with meaningful HTTP status codes
+- DTOs decouple API contracts from persistence entities
+- Business logic centralized in the service layer
+- Clean separation of concerns (Controller / Service / Repository)
+- JWT authentication implemented via a custom security filter
+- Centralized exception handling with custom error responses
+- Validation annotations ensure request correctness before reaching the service layer
+- All endpoints follow REST conventions with meaningful HTTP status codes
 
 ### Possible future improvements
-	- Shopping cart support
-	- Payment integration
-	- Pagination and sorting for products and orders
-	- Docker support
-	- CI/CD with GitHub Actions
+- Shopping cart support
+- Payment integration
+- Pagination and sorting for products and orders
+- Docker support
+- CI/CD with GitHub Actions
 
 Author:
 Eros Burelli  
