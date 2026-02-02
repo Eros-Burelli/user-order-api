@@ -76,6 +76,8 @@ JWT_EXPIRATION=3600000
 mvn spring-boot:run
 ```
 
+---
+
 ## Project Structure
 
 ```text
