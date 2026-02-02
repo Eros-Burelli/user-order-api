@@ -62,13 +62,19 @@ This project was developed as a personal portfolio project to demonstrate backen
 
 ```bash
 git clone https://github.com/Eros-Burelli/user-order-api.git
+```
 
 ### 2. Configure environment variables
+
+```bash
 JWT_SECRET=your-secure-secret
 JWT_EXPIRATION=3600000
+```
 
+```bash
 ### 3. Run the application
 mvn spring-boot:run
+```
 
 ## Project Structure
 
