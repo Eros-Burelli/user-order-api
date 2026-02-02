@@ -110,7 +110,7 @@ src
 
 ---
 
-### Design notes
+## Design notes
 - DTOs decouple API contracts from persistence entities
 - Business logic centralized in the service layer
 - Clean separation of concerns (Controller / Service / Repository)
@@ -119,7 +119,9 @@ src
 - Validation annotations ensure request correctness before reaching the service layer
 - All endpoints follow REST conventions with meaningful HTTP status codes
 
-### Possible future improvements
+---
+
+## Possible future improvements
 - Shopping cart support
 - Payment integration
 - Pagination and sorting for products and orders
