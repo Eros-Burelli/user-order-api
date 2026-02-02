@@ -108,6 +108,8 @@ src
                      └─ service
 ```
 
+---
+
 ### Design notes
 - DTOs decouple API contracts from persistence entities
 - Business logic centralized in the service layer
