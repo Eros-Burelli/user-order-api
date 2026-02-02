@@ -2,7 +2,6 @@ package com.eros.userorderapi.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -42,14 +41,14 @@ public class OrderService {
 		List<OrderItem> items = dto.getItems().stream()
 				.map(i -> {
 					Product product = productRepository.findById(i.getProductId())
-							.orElseThrow(() -> new RuntimeException("Product not found with id " + i.getProductId()));
+							.orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + i.getProductId()));
 					OrderItem orderItem = new OrderItem();
 					orderItem.setOrder(order);
 					orderItem.setProduct(product);
 					orderItem.setQuantity(i.getQuantity());
 					orderItem.setUnitPrice(product.getPrice());
 					return orderItem;
-				}).collect(Collectors.toList());
+				}).toList();
 
 		items.forEach(order::addItem);
 
