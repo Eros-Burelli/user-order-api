@@ -15,6 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.eros.userorderapi.config.OrderControllerTestConfig;
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 				type = FilterType.ASSIGNABLE_TYPE,
 				classes = JwtAuthenticationFilter.class))
 @Import({OrderControllerTestConfig.class, OrderSecurityTestConfig.class})
+@ActiveProfiles("test")
 class OrderSecurityTest {
 
 	@Autowired
@@ -42,7 +44,7 @@ class OrderSecurityTest {
 
 	@Test
 	void userCanCreateOrder() throws Exception {
-		User user = new User("Mario Rossi", "mario@exambple.com", "password");
+		User user = new User("Mario Rossi", "mario@example.com", "password1!");
 		user.setId(1L);
 		user.setRole(UserRole.USER);
 		OrderCreateRequestDTO dto = new OrderCreateRequestDTO();
