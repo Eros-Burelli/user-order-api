@@ -3,6 +3,7 @@ package com.eros.userorderapi.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,7 +33,8 @@ public class SecurityConfig {
 	        .authorizeHttpRequests(auth -> auth
 	            .requestMatchers("/users/login", "/users").permitAll()
 	            .requestMatchers("/products/**").permitAll()
-	            .requestMatchers("/orders/user/**").hasRole("USER")
+	            .requestMatchers(HttpMethod.POST, "/orders").hasRole("USER")
+	            .requestMatchers("/orders/me").hasRole("USER")
 	            .requestMatchers("/orders/**").hasRole("ADMIN")
 	            .anyRequest().authenticated()
 	        )

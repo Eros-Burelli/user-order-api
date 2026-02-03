@@ -46,11 +46,11 @@ class UserControllerTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	void createUser_shouldReturnCreateUsr() throws Exception {
+	void createUser_shouldReturnCreateUser() throws Exception {
 		UserCreateRequestDTO dto = new UserCreateRequestDTO();
 		dto.setName("Mario");
 		dto.setEmail("mario@test.com");
-		dto.setPassword("password");
+		dto.setPassword("password1!");
 
 		UserResponseDTO userResponseDTO = new UserResponseDTO(1L, "Mario", "mario@test.com");
 

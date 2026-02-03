@@ -2,6 +2,7 @@ package com.eros.userorderapi.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.eros.userorderapi.enums.OrderStatus;
@@ -40,7 +41,7 @@ public class Order {
 	private User user;
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<OrderItem> items;
+	private List<OrderItem> items = new ArrayList<>();
 
 	@Column(nullable = false, precision = 10, scale = 2)
 	private BigDecimal totalAmount;

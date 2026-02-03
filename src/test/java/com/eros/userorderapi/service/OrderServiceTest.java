@@ -54,7 +54,6 @@ class OrderServiceTest {
 	    OrderItemRequestDTO itemDTO = new OrderItemRequestDTO(1L, 2);
 	    OrderCreateRequestDTO dto = new OrderCreateRequestDTO(List.of(itemDTO));
 
-	    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 	    when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 	    when(orderRepository.save(any(Order.class)))
 	        .thenAnswer(invocation -> invocation.getArgument(0));

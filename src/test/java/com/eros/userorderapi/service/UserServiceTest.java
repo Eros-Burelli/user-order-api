@@ -1,6 +1,7 @@
 package com.eros.userorderapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -44,6 +45,7 @@ class UserServiceTest {
 	    savedUser.setRole(UserRole.USER);
 
 	    when(passwordEncoder.encode("plain")).thenReturn("encoded");
+	    when(userRepository.existsByEmail("mario@test.com")).thenReturn(false);
 	    when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
 	    UserResponseDTO result = userService.createUser(dto);
@@ -51,6 +53,20 @@ class UserServiceTest {
 	    assertEquals(1L, result.id());
 	    assertEquals("Mario", result.name());
 	    assertEquals("mario@test.com", result.email());
+	}
+
+
+	@Test
+	void createUser_shouldThrownException_whenEmailAreadyExists() {
+		UserCreateRequestDTO dto = new UserCreateRequestDTO();
+		dto.setName("Mario");
+		dto.setEmail("mario@test.com");
+		dto.setPassword("plain");
+
+		when(userRepository.existsByEmail("mario@test.com")).thenReturn(true);
+
+		assertThrows(IllegalArgumentException.class, () -> userService.createUser(dto));
+
 	}
 
 

@@ -1,6 +1,7 @@
 package com.eros.userorderapi.security;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -14,7 +15,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.eros.userorderapi.config.OrderControllerTestConfig;
@@ -22,6 +22,8 @@ import com.eros.userorderapi.config.OrderSecurityTestConfig;
 import com.eros.userorderapi.controller.OrderController;
 import com.eros.userorderapi.dto.request.OrderCreateRequestDTO;
 import com.eros.userorderapi.dto.request.OrderItemRequestDTO;
+import com.eros.userorderapi.enums.UserRole;
+import com.eros.userorderapi.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(
@@ -38,31 +40,34 @@ class OrderSecurityTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@WithMockUser(roles = "USER")
 	@Test
 	void userCanCreateOrder() throws Exception {
+		User user = new User("Mario Rossi", "mario@exambple.com", "password");
+		user.setId(1L);
+		user.setRole(UserRole.USER);
 		OrderCreateRequestDTO dto = new OrderCreateRequestDTO();
-		dto.setItems(List.of(new OrderItemRequestDTO(1l, 2)));
+		dto.setItems(List.of(new OrderItemRequestDTO(1L, 2)));
 
-		mockMvc.perform(post("/orders/user/1")
+		mockMvc.perform(post("/orders")
 				.with(csrf())
+				.with(user(new CustomUserDetails(user)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().isOk());
 	}
 
-	@WithMockUser(roles = "USER")
 	@Test
 	void userCannotAccessAdminEndpoint() throws Exception {
-		mockMvc.perform(get("/orders"))
-			.andExpect(status().isForbidden());
+		mockMvc.perform(get("/orders")
+					.with(user("user").roles("USER")))
+				.andExpect(status().isForbidden());
 	}
 
-	@WithMockUser(roles = "ADMIN")
 	@Test
 	void adminCanAccessAllOrders() throws Exception {
-		mockMvc.perform(get("/orders"))
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/orders")
+					.with(user("admin").roles("ADMIN")))
+				.andExpect(status().isOk());
 	}
 
 	@Test

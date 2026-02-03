@@ -33,7 +33,6 @@ public class OrderService {
 	 */
 	@Transactional
 	public OrderResponseDTO createOrder(User user, OrderCreateRequestDTO dto) {
-
 		Order order = new Order();
 		order.setUser(user);
 		order.setStatus(OrderStatus.PENDING);
@@ -68,7 +67,6 @@ public class OrderService {
 	 * Returns all orders belonging to a specific user.
 	 */
 	public List<OrderResponseDTO> getMyOrders(User user) {
-
 		return orderRepository.findByUser(user).stream()
 				.map(this::toResponseDTO)
 				.toList();
@@ -99,7 +97,6 @@ public class OrderService {
 	 * Converts a Order entity to OrderResponseDTO.
 	 */
 	private OrderResponseDTO toResponseDTO(Order order) {
-
 	    List<OrderItemResponseDTO> itemDTOs = order.getItems().stream()
 	        .map(item -> new OrderItemResponseDTO(
 	            item.getProduct().getId(),
