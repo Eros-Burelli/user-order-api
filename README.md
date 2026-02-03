@@ -78,6 +78,58 @@ mvn spring-boot:run
 
 ---
 
+## Run with Docker
+
+### 1. Install Docker (if you don't have it yet)
+
+- **Windows / macOS**: install Docker Desktop from https://www.docker.com/products/docker-desktop/
+- **Linux**: install Docker Engine following the official guide: https://docs.docker.com/engine/install/
+
+Verify the installation:
+
+```bash
+docker --version
+docker compose version
+```
+
+### 2. Start the app with Docker Compose (first time)
+
+```bash
+docker compose up --build
+```
+
+The `docker-compose.yml` file includes the database configuration and default JWT settings.  
+Update `JWT_SECRET` and `JWT_EXPIRATION` in `docker-compose.yml` if needed.
+
+### 3. Check the logs (optional)
+
+Keep the terminal open: you'll see the logs for MySQL and the app.  
+Once the app has started, you can continue to the next step.
+
+### 4. Access the API
+
+The application will be available at:
+
+```text
+http://localhost:8080
+```
+
+### 5. Stop containers
+
+```bash
+docker compose down
+```
+
+### 6. Quick restart (after the first time)
+
+If the image has already been built and you haven't changed the code:
+
+```bash
+docker compose up
+```
+
+---
+
 ## Project Structure
 
 ```text

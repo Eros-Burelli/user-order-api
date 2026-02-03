@@ -1,0 +1,36 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: userorder-mysql
+    environment:
+      MYSQL_DATABASE: userorderdb
+      MYSQL_USER: userorder
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: userorder-api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/userorderdb
+      SPRING_DATASOURCE_USERNAME: userorder
+      SPRING_DATASOURCE_PASSWORD: password
+      JWT_SECRET: your-secure-secret
+      JWT_EXPIRATION: 3600000
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql_data:
