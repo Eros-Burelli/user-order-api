@@ -11,7 +11,9 @@ import com.eros.userorderapi.dto.response.ApiErrorResponse;
 import com.eros.userorderapi.enums.ApiErrorType;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -20,34 +22,30 @@ public class GlobalExceptionHandler {
 		return buildErrorResponse(ApiErrorType.NOT_FOUND, ex.getMessage(), request);
 	}
 
-	@ExceptionHandler({IllegalArgumentException.class, InvalidCredentialsException.class})
+	@ExceptionHandler({ IllegalArgumentException.class, InvalidCredentialsException.class })
 	public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException ex, HttpServletRequest request) {
 		return buildErrorResponse(ApiErrorType.BAD_REQUEST, ex.getMessage(), request);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ApiErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request){
-		String message = ex.getBindingResult()
-						   .getFieldErrors()
-						   .stream()
-						   .map(err -> err.getField() + ": " + err.getDefaultMessage())
-						   .findFirst()
-						   .orElse("Validation error");
+	public ResponseEntity<ApiErrorResponse> handleValidationException(MethodArgumentNotValidException ex,
+			HttpServletRequest request) {
+		String message = ex.getBindingResult().getFieldErrors().stream()
+				.map(err -> err.getField() + ": " + err.getDefaultMessage()).findFirst().orElse("Validation error");
 
 		return buildErrorResponse(ApiErrorType.VALIDATION_ERROR, message, request);
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+		log.error("Unexpected error for request {}", request.getRequestURI(), ex);
 		return buildErrorResponse(ApiErrorType.INTERNAL_ERROR, null, request);
 	}
 
-	private ResponseEntity<ApiErrorResponse> buildErrorResponse(ApiErrorType type, String details, HttpServletRequest request) {
-		ApiErrorResponse response = new ApiErrorResponse(
-				LocalDateTime.now(),
-				type.getStatus().value(),
-				type.getDefaultMessage(),
-				details != null ? details : type.getDefaultMessage(),
+	private ResponseEntity<ApiErrorResponse> buildErrorResponse(ApiErrorType type, String details,
+			HttpServletRequest request) {
+		ApiErrorResponse response = new ApiErrorResponse(LocalDateTime.now(), type.getStatus().value(),
+				type.getDefaultMessage(), details != null ? details : type.getDefaultMessage(),
 				request.getRequestURI());
 
 		return ResponseEntity.status(type.getStatus()).body(response);

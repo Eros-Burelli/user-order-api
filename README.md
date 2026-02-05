@@ -78,6 +78,18 @@ mvn spring-boot:run
 
 ---
 
+## API Documentation (Swagger)
+
+Once the application is running, open:
+
+```text
+http://localhost:8080/swagger-ui.html
+```
+
+Use the **Authorize** button to provide a JWT token (prefix with `Bearer `) when testing protected endpoints.
+
+---
+
 ## Run with Docker
 
 ### 1. Install Docker (if you don't have it yet)
@@ -177,7 +189,6 @@ src
 - Shopping cart support
 - Payment integration
 - Pagination and sorting for products and orders
-- Docker support
 - CI/CD with GitHub Actions
 
 Author:
