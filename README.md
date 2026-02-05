@@ -145,31 +145,36 @@ docker compose up
 ## Project Structure
 
 ```text
-src
- ├─ main
- │   └─ java
- │       └─ com
- │           └─ eros
- │               └─ userorderapi
- │                   ├─ config
- │                   ├─ controller
- │                   ├─ dto
- │                   │   ├─ request
- │                   │   └─ response
- │                   ├─ enums
- │                   ├─ exception
- │                   ├─ model
- │                   ├─ repository
- │                   ├─ security
- │                   └─ service
- └─ test
-     └─ java
-         └─ com
-             └─ eros
-                 └─ userorderapi
-                     ├─ config
-                     ├─ controller
-                     └─ service
+├─ Dockerfile
+├─ docker-compose.yml
+└─ src
+   ├─ main
+   │  ├─ java/com/eros/userorderapi
+   │  │  ├─ config
+   │  │  │  ├─ OpenApiConfig.java
+   │  │  │  └─ SecurityConfig.java
+   │  │  ├─ controller
+   │  │  │  ├─ AuthController.java
+   │  │  │  ├─ UserController.java
+   │  │  │  ├─ ProductController.java
+   │  │  │  └─ OrderController.java
+   │  │  ├─ dto
+   │  │  │  ├─ request
+   │  │  │  └─ response
+   │  │  ├─ enums
+   │  │  ├─ exception
+   │  │  ├─ model
+   │  │  ├─ repository
+   │  │  ├─ security
+   │  │  └─ service
+   │  └─ resources
+   │     └─ application.properties
+   └─ test
+      └─ java/com/eros/userorderapi
+         ├─ config
+         ├─ controller
+         ├─ security
+         └─ service
 ```
 
 ---
