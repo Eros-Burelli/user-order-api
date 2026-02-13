@@ -8,7 +8,7 @@ RUN ./mvnw -q -DskipTests dependency:go-offline
 COPY src src
 RUN ./mvnw -q -DskipTests package
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar

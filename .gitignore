@@ -33,3 +33,6 @@ application-local.properties
 
 # VS Code
 .vscode/
+
+# Docker local env
+.env
