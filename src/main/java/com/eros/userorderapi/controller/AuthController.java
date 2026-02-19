@@ -15,11 +15,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Auth", description = "Authentication endpoints")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
 	private final UserService userService;
@@ -28,8 +30,10 @@ public class AuthController {
 	@PostMapping("/login")
 	@Operation(summary = "Authenticate user and return JWT")
 	public TokenResponseDTO login(@Valid @RequestBody LoginRequestDTO loginRequest) {
+		log.info("Login request received for email: {}", loginRequest.getEmail());
 		User user = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
 		String token = jwtTokenProvider.generateToken(user.getId(), user.getRole());
+		log.info("JWT generated for userId: {} - role: {}", user.getId(), user.getRole());
 
 		return new TokenResponseDTO(token);
 	}

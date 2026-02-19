@@ -12,9 +12,11 @@ import com.eros.userorderapi.repository.ProductRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ProductService {
 
 	private final ProductRepository productRepository;
@@ -24,10 +26,14 @@ public class ProductService {
 	 */
 	@Transactional
 	public ProductResponseDTO createProduct(ProductCreateRequestDTO dto) {
+		log.info("Creating product name: {}", dto.getName());
 		Product product = new Product();
 		product.setName(dto.getName());
 		product.setPrice(dto.getPrice());
-		return toResponseDTO(productRepository.save(product));
+		Product saved = productRepository.save(product);
+		log.info("Product created id: {} - name: {}", saved.getId(), saved.getName());
+
+		return toResponseDTO(saved);
 	}
 
 	/**
@@ -35,17 +41,22 @@ public class ProductService {
 	 */
 	@Transactional
 	public ProductResponseDTO updateProduct(Long id, ProductCreateRequestDTO dto) {
+		log.info("Updating product id: {}", id);
 		Product product = productRepository.findById(id)
 							.orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + id));
 		product.setName(dto.getName());
 		product.setPrice(dto.getPrice());
-		return toResponseDTO(productRepository.save(product));
+		Product updated = productRepository.save(product);
+		log.info("Updated product id: {} - name: {}", updated.getId(), updated.getName());
+
+		return toResponseDTO(updated);
 	}
 
 	/**
 	 * Return a product by its id
 	 */
 	public ProductResponseDTO getProductById(Long id) {
+		log.debug("Fetching product id: {}", id);
 		Product product = productRepository.findById(id)
 							.orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + id));
 		return toResponseDTO(product);
@@ -56,6 +67,7 @@ public class ProductService {
 	 * Returns all product
 	 */
 	public List<ProductResponseDTO> getAllProducts() {
+		log.debug("Fetching all products");
 		return productRepository.findAll()
 				.stream()
 				.map(this::toResponseDTO)

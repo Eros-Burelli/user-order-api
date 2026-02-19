@@ -19,100 +19,110 @@ import com.eros.userorderapi.repository.ProductRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class OrderService {
 
-	private final OrderRepository orderRepository;
-	private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
 
-	/**
-	 * Creates a new order for the given user and calculates the total amount.
-	 */
-	@Transactional
-	public OrderResponseDTO createOrder(User user, OrderCreateRequestDTO dto) {
-		Order order = new Order();
-		order.setUser(user);
-		order.setStatus(OrderStatus.PENDING);
+    /**
+     * Creates a new order for the given user and calculates the total amount.
+     */
+    @Transactional
+    public OrderResponseDTO createOrder(User user, OrderCreateRequestDTO dto) {
+        log.info("Creating order for userId: {} - items: {}", user.getId(), dto.getItems().size());
+        Order order = new Order();
+        order.setUser(user);
+        order.setStatus(OrderStatus.PENDING);
 
-		List<OrderItem> items = dto.getItems().stream()
-				.map(i -> {
-					Product product = productRepository.findById(i.getProductId())
-							.orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + i.getProductId()));
-					OrderItem orderItem = new OrderItem();
-					orderItem.setOrder(order);
-					orderItem.setProduct(product);
-					orderItem.setQuantity(i.getQuantity());
-					orderItem.setUnitPrice(product.getPrice());
-					return orderItem;
-				}).toList();
+        List<OrderItem> items = dto.getItems().stream()
+                .map(i -> {
+                    Product product = productRepository.findById(i.getProductId())
+                            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + i.getProductId()));
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setOrder(order);
+                    orderItem.setProduct(product);
+                    orderItem.setQuantity(i.getQuantity());
+                    orderItem.setUnitPrice(product.getPrice());
+                    return orderItem;
+                }).toList();
 
-		items.forEach(order::addItem);
+        items.forEach(order::addItem);
 
-		BigDecimal total = items.stream()
-				.map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
-				.reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = items.stream()
+                .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		order.setTotalAmount(total);
+        order.setTotalAmount(total);
 
-		Order saved = orderRepository.save(order);
+        Order saved = orderRepository.save(order);
+        log.info("Order created id: {} - userId: {} - total: {} - status: {}", saved.getId(), user.getId(), saved.getTotalAmount(), saved.getStatus());
 
-		return toResponseDTO(saved);
-	}
-
-
-	/**
-	 * Returns all orders belonging to a specific user.
-	 */
-	public List<OrderResponseDTO> getMyOrders(User user) {
-		return orderRepository.findByUser(user).stream()
-				.map(this::toResponseDTO)
-				.toList();
-	}
-
-	/*
-	 * Returns all orders
-	 */
-	public List<OrderResponseDTO> getAllOrders(){
-		return orderRepository.findAll().stream()
-				.map(this::toResponseDTO)
-				.toList();
-	}
+        return toResponseDTO(saved);
+    }
 
 
-	/**
-	 * Updates the status of an existing order.
-	 */
-	public OrderResponseDTO updateOrder(Long id, OrderStatus orderStatus) {
-		Order order = orderRepository.findById(id)
-						.orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + id));
-		order.setStatus(orderStatus);
-		return toResponseDTO(orderRepository.save(order));
-	}
+    /**
+     * Returns all orders belonging to a specific user.
+     */
+    public List<OrderResponseDTO> getMyOrders(User user) {
+    	log.debug("fetching orders for userId: {}", user.getId());
+        return orderRepository.findByUser(user).stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
+    /*
+     * Returns all orders
+     */
+    public List<OrderResponseDTO> getAllOrders(){
+    	log.debug("Fetching all orders");
+        return orderRepository.findAll().stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
 
 
-	/**
-	 * Converts a Order entity to OrderResponseDTO.
-	 */
-	private OrderResponseDTO toResponseDTO(Order order) {
-	    List<OrderItemResponseDTO> itemDTOs = order.getItems().stream()
-	        .map(item -> new OrderItemResponseDTO(
-	            item.getProduct().getId(),
-	            item.getProduct().getName(),
-	            item.getQuantity(),
-	            item.getUnitPrice()
-	        ))
-	        .toList();
+    /**
+     * Updates the status of an existing order.
+     */
+    public OrderResponseDTO updateOrder(Long id, OrderStatus orderStatus) {
+    	log.info("Updating order status id: {} - newStatus: {}", id, orderStatus);
+        Order order = orderRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Order not found with id " + id));
+        order.setStatus(orderStatus);
+        Order saved = orderRepository.save(order);
+        log.info("Order updated id: {} - status: {}", saved.getId(), saved.getStatus());
 
-	    return new OrderResponseDTO(
-	        order.getId(),
-	        order.getCreatedAt(),
-	        order.getTotalAmount(),
-	        order.getStatus().name(),
-	        itemDTOs
-	    );
-	}
+        return toResponseDTO(saved);
+    }
+
+
+    /**
+     * Converts a Order entity to OrderResponseDTO.
+     */
+    private OrderResponseDTO toResponseDTO(Order order) {
+        List<OrderItemResponseDTO> itemDTOs = order.getItems().stream()
+            .map(item -> new OrderItemResponseDTO(
+                item.getProduct().getId(),
+                item.getProduct().getName(),
+                item.getQuantity(),
+                item.getUnitPrice()
+            ))
+            .toList();
+
+        return new OrderResponseDTO(
+            order.getId(),
+            order.getCreatedAt(),
+            order.getTotalAmount(),
+            order.getStatus().name(),
+            itemDTOs
+        );
+    }
 
 }

@@ -16,9 +16,11 @@ import com.eros.userorderapi.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
 	private final UserRepository userRepository;
@@ -30,8 +32,10 @@ public class UserService {
 	 */
 	@Transactional
 	public UserResponseDTO createUser(UserCreateRequestDTO dto) {
+		log.info("Creating user with email: {}", dto.getEmail());
 
 		if(userRepository.existsByEmail(dto.getEmail())) {
+			log.warn("User creation failed: email: {} already in use",  dto.getEmail());
 			throw new IllegalArgumentException("Email already in use");
 		}
 
@@ -42,6 +46,7 @@ public class UserService {
 		user.setRole(UserRole.USER);
 
 		User saved = userRepository.save(user);
+		log.info("User created succesfully id: {} - email: {}", saved.getId(), saved.getEmail());
 
 		return toResponseDTO(saved);
 	}
@@ -51,6 +56,7 @@ public class UserService {
 	 * Returns all users.
 	 */
 	public List<User> getAllUsers() {
+		log.debug("Fetching all users");
 		return userRepository.findAll();
 	}
 
@@ -59,6 +65,7 @@ public class UserService {
 	 * Throws ResourceNotFoundException if the user is not found.
 	 */
 	public UserResponseDTO getUserById(Long id) {
+		log.debug("Fetching user id: {}", id);
 		User user = userRepository.findById(id)
 						.orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -71,6 +78,7 @@ public class UserService {
 	 */
 	@Transactional
 	public UserResponseDTO updateUser(Long id, UserUpdateRequestDTO dto) {
+		log.info("Updating user id: {}", id);
 		User user = userRepository.findById(id)
 						.orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id ));
 
@@ -78,6 +86,7 @@ public class UserService {
 		user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
 		User updated = userRepository.save(user);
+		log.info("User updated succesfully id: {}", updated.getId());
 
 		return toResponseDTO(updated);
 	}
@@ -87,6 +96,7 @@ public class UserService {
 	 * Deletes a user by ID.
 	 */
 	public void deleteUser(Long id) {
+		log.info("Deleting user id: {}", id);
 		userRepository.deleteById(id);
 	}
 
@@ -96,12 +106,16 @@ public class UserService {
 	 * Throws InvalidCredentialsException if the password does not match.
 	 */
 	public User authenticate(String email, String password) {
+		log.debug("Authenticating user emial: {}", email);
 		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
 		if(!passwordEncoder.matches(password, user.getPassword())) {
+			log.warn("Authentication failed for email: {}", email);
 			throw new InvalidCredentialsException("Invalid credentials");
 		}
+
+		log.info("Authentication succeeded for user id: {}", user.getId());
 
 		return user;
 	}
