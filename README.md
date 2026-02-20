@@ -66,6 +66,14 @@ git clone https://github.com/Eros-Burelli/user-order-api.git
 
 ### 2. Configure environment variables
 
+Create a `.env` file (you can copy from `.env.example`) and set your values:
+
+```bash
+cp .env.example .env
+```
+
+At minimum configure:
+
 ```bash
 JWT_SECRET=your-secure-secret
 JWT_EXPIRATION=3600000
