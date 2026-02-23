@@ -202,7 +202,6 @@ docker compose up
 - Shopping cart support
 - Payment integration
 - Pagination and sorting for products and orders
-- CI/CD with GitHub Actions
 
 Author:
 Eros Burelli  
