@@ -1,5 +1,7 @@
 # User Order API
 
+![CI](https://github.com/Eros-Burelli/user-order-api/actions/workflows/ci.yml/badge.svg)
+
 User Order API is a RESTful backend application built with Spring Boot for managing users, products, and orders.  
 It features JWT-based authentication, role-based authorization (USER / ADMIN), and a layered architecture following real-world backend best practices.
 
