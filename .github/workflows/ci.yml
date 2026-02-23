@@ -12,15 +12,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
-    env:
-      CI_DB_PASSWORD: ${{ secrets.CI_DB_PASSWORD || format('ci-{0}-{1}', github.run_id, github.run_attempt) }}
-      CI_DB_ROOT_PASSWORD: ${{ secrets.CI_DB_ROOT_PASSWORD || format('root-{0}-{1}', github.run_id, github.run_attempt) }}
-      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/userorderdb
-      SPRING_DATASOURCE_USERNAME: userorder
-      SPRING_DATASOURCE_PASSWORD: ${{ env.CI_DB_PASSWORD }}
-      JWT_SECRET: ${{ secrets.CI_JWT_SECRET }}
-      JWT_EXPIRATION: 3600000
+
 
     services:
       mysql:
@@ -28,16 +20,16 @@ jobs:
         env:
           MYSQL_DATABASE: userorderdb
           MYSQL_USER: userorder
-          MYSQL_PASSWORD: ${{ env.CI_DB_PASSWORD }}
-          MYSQL_ROOT_PASSWORD: ${{ env.CI_DB_ROOT_PASSWORD }}
+          MYSQL_PASSWORD: ${{ secrets.CI_DB_PASSWORD || format('ci-{0}-{1}', github.run_id, github.run_attempt) }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.CI_DB_ROOT_PASSWORD || format('root-{0}-{1}', github.run_id, github.run_attempt) }}
         ports:
-          - 3306:3306
+          - 3306
         options: --health-cmd="mysqladmin ping -h 127.0.0.1 -uuserorder -p${MYSQL_PASSWORD}" --health-interval=10s --health-timeout=5s --health-retries=10
 
     env:
       SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/userorderdb
       SPRING_DATASOURCE_USERNAME: userorder
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.CI_DB_PASSWORD}}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.CI_DB_PASSWORD || format('ci-{0}-{1}', github.run_id, github.run_attempt) }}
       JWT_SECRET: ${{ secrets.CI_JWT_SECRET }}
       JWT_EXPIRATION: 3600000
 
